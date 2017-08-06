@@ -14,4 +14,9 @@ namespace parser;
 class Country extends App
 {
 
+    public function run():string
+    {
+        return   'Country';
+    }
+
 }

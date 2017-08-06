@@ -12,4 +12,8 @@ namespace parser;
 class Commerce extends App
 {
 
+    public function run():string
+    {
+        return   'Commerce';
+    }
 }

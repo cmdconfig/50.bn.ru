@@ -39,7 +39,7 @@ class BnParser2 extends \parser\App
 }
 
 $parser = new BnParser2();
-
+$html = '';
 if ($_POST) {
     if (strpos($_POST['type'], 'city') !== false) {
         $parser = new \parser\City();
@@ -61,7 +61,7 @@ if ($_POST) {
 <head>
 </head>
 <body>
-<form method="post" action="/">
+<form method="post" action="/index2.php">
     <table border="1">
         <tr>
             <td>Тип</td>

@@ -135,13 +135,12 @@ class City extends App
                     <td>{$val[self::DATA_CURRENCY]}</td>
                 </tr>";
             }
+        }
 
-
-            $html[] = '
+        $html[] = '
                 </tbody>
                 </table>
                 ';
-        }
 
         return join('', $html);
     }
