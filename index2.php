@@ -8,9 +8,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-/**
- * Class BnParser
- */
 class BnParser
 {
     const DATA_LINK = 1;
@@ -24,9 +21,6 @@ class BnParser
     const DATA_CURRENCY = 10;
 
 
-    /**
-     * @var string
-     */
     protected $defaultSearchURL = 'http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price[from]=&price[to]=';
     //http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price%5Bfrom%5D=&price%5Bto%5D=
     //http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price[from]=&price[to]=
@@ -34,77 +28,35 @@ class BnParser
      * @var string
      */
     public $baseURL = 'http://www.50.bn.ru';
-    /**
-     * @var string
-     */
     protected $searchURL = 'http://www.50.bn.ru/sale/%s/?sort=%s&sortorder=%s&price[from]=%s&price[to]=%s';
 
-    /**
-     * @var string
-     */
     private $baseHTML = '';
 
-    /**
-     * @var array
-     */
     public $types = [];
 
-    /**
-     * @var int
-     */
     public $maxRooms = 10;
 
-    /**
-     * @var array
-     */
     public $filterRooms = [];
 
-    /**
-     * @var array
-     */
     public $result = [];
 
-    /**
-     * @var array
-     */
     protected $filters = ['type', 'sort', 'sortOrder', 'priceFrom', 'priceTo'];
 
-    /**
-     * @var string
-     */
     protected $defaultOrder = 'ASC';
 
-    /**
-     * @var string
-     */
     protected $defaultType = 'city/flats';
 
-    /**
-     * @var string
-     */
     protected $defaultPhotoParam = '&only_photo=1';
 
-    /**
-     * @var bool
-     */
     private $photo = false;
 
-    /**
-     * @var array
-     */
     public $rooms = [];
 
-    /**
-     * BnParser constructor.
-     */
     function __construct()
     {
         $this->getTypes();
     }
 
-    /**
-     *
-     */
     public function run()
     {
         $type = $this->defaultType;
@@ -155,10 +107,6 @@ class BnParser
         }
     }
 
-    /**
-     * @param string $row
-     * @return array
-     */
     protected function getDataFromRow(string $row): array
     {
         preg_match('#<td><p><a href="([a-z0-9/]{5,})" class="underline" target="_blank" onclick="return false;">([а-яА-Я0-9\D]{5,})</a>(<a class="ico photo" title="">([0-9]{1,})</a>|)</p></td>
@@ -180,9 +128,6 @@ class BnParser
     }
 
 
-    /**
-     * @return string
-     */
     protected function getResultDIV(): string
     {
         $result = '';
@@ -201,14 +146,6 @@ class BnParser
         return $result;
     }
 
-    /**
-     * @param string $type
-     * @param string $sort
-     * @param string $sortOrder
-     * @param string $priceFrom
-     * @param string $priceTo
-     * @return string
-     */
     protected function getHTML(string $type, string $sort, string $sortOrder = 'ASC', string $priceFrom, string $priceTo): string
     {
         $url = sprintf($this->searchURL, $type, $sort, $sortOrder, $priceFrom, $priceTo);
@@ -221,9 +158,6 @@ class BnParser
     }
 
 
-    /**
-     *
-     */
     protected function getTypes()
     {
         $html = iconv('cp1251', 'utf8', $this->getURL($this->baseURL));
@@ -240,10 +174,6 @@ class BnParser
         }
     }
 
-    /**
-     * @param string $url
-     * @return string
-     */
     private function getURL(string $url): string
     {
         $ch = curl_init();
@@ -332,7 +262,6 @@ if ($_POST) {
     <table>
         <thead>
         <tr>
-
             <td>Адрес</td>
             <td>Кол-во фото</td>
             <td>Ком.</td>
