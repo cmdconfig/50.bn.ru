@@ -8,7 +8,7 @@
 
 namespace parser;
 
-class City extends app
+class City extends App
 {
     const DATA_LINK = 1;
     const DATA_TITLE = 2;

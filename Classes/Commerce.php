@@ -9,7 +9,7 @@
 namespace parser;
 
 
-class Commerce extends app
+class Commerce extends App
 {
 
 }

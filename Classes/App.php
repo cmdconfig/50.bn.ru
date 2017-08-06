@@ -8,7 +8,7 @@ namespace parser;
  * Time: 3:50 PM
  */
 
-abstract class app
+abstract class App
 {
 
     protected $defaultSearchURL = 'http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price[from]=&price[to]=';
@@ -42,7 +42,7 @@ abstract class app
 
     public $rooms = [];
 
-    public function run(){}
+    public function run():string{}
 
     protected function getDataFromRow(string $row): array{}
 

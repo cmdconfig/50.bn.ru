@@ -8,155 +8,18 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-class BnParser
+include_once 'Classes/App.php';
+include_once 'Classes/City.php';
+include_once 'Classes/Commerce.php';
+include_once 'Classes/Country.php';
+
+class BnParser2 extends \parser\App
 {
-    const DATA_LINK = 1;
-    const DATA_TITLE = 2;
-    const DATA_COUNT_PHOTO = 4;
-    const DATA_ROOMS = 5;
-    const DATA_DIMENSIONS = 6;
-    const DATA_FLOOR = 7;
-    const DATA_CONSTRUCTION = 8;
-    const DATA_PRICE = 9;
-    const DATA_CURRENCY = 10;
-
-
-    protected $defaultSearchURL = 'http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price[from]=&price[to]=';
-    //http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price%5Bfrom%5D=&price%5Bto%5D=
-    //http://www.50.bn.ru/sale/city/flats/?sort=price&sortorder=ASC&price[from]=&price[to]=
-    /**
-     * @var string
-     */
-    public $baseURL = 'http://www.50.bn.ru';
-    protected $searchURL = 'http://www.50.bn.ru/sale/%s/?sort=%s&sortorder=%s&price[from]=%s&price[to]=%s';
-
-    private $baseHTML = '';
-
-    public $types = [];
-
-    public $maxRooms = 10;
-
-    public $filterRooms = [];
-
-    public $result = [];
-
-    protected $filters = ['type', 'sort', 'sortOrder', 'priceFrom', 'priceTo'];
-
-    protected $defaultOrder = 'ASC';
-
-    protected $defaultType = 'city/flats';
-
-    protected $defaultPhotoParam = '&only_photo=1';
-
-    private $photo = false;
-
-    public $rooms = [];
 
     function __construct()
     {
         $this->getTypes();
     }
-
-    public function run()
-    {
-        $type = $this->defaultType;
-        $sort = '';
-        $sortOrder = $this->defaultOrder;
-        $priceFrom = '';
-        $priceTo = '';
-
-        if (isset($_POST['rooms'])) {
-            $this->rooms = $_POST['rooms'];
-        }
-
-        if (!empty($_POST['photo'])) {
-            $this->photo = true;
-        }
-
-        if (!empty($_POST['type'])) {
-            $type = $_POST['type'];
-        }
-
-        if (!empty($_POST['sort'])) {
-            $sort = $_POST['sort'];
-        }
-
-        if (!empty($_POST['sortOrder'])) {
-            $sortOrder = $_POST['sortOrder'];
-        }
-
-        if (!empty($_POST['priceFrom'])) {
-            $priceFrom = $_POST['priceFrom'];
-        }
-
-        if (!empty($_POST['priceTo'])) {
-            $priceTo = $_POST['priceTo'];
-        }
-
-        $this->baseHTML = iconv('cp1251', 'utf8',
-            $this->getHTML($type, $sort, $sortOrder, $priceFrom, $priceTo));
-
-        $resDiv = $this->getResultDIV();
-
-        preg_match_all('#<tr onclick="tr_click\(this\)">(.*)</tr>#Uis', $resDiv, $rows);
-
-        if (isset($rows[1])) {
-            foreach ($rows[1] as $row) {
-                $this->result[] = $this->getDataFromRow($row);
-            }
-        }
-    }
-
-    protected function getDataFromRow(string $row): array
-    {
-        preg_match('#<td><p><a href="([a-z0-9/]{5,})" class="underline" target="_blank" onclick="return false;">([а-яА-Я0-9\D]{5,})</a>(<a class="ico photo" title="">([0-9]{1,})</a>|)</p></td>
-<td>([0-9\-\s]{1,})</td>
-<td>([\d\s\-\/]{1,})</td>
-<td>([\d\s\-\/]{1,})</td>
-<td><abbr title="([\D]{1,})">[\D]{1,}</abbr></td>	<td><p><span><b>([\d\s\-\/]{2,})</b></span><br>([\D]{2,}).</p></td>#Uis', trim($row), $res);
-
-        if (empty($res)) {
-            preg_match('#<td><p><a href="([a-z0-9/]{5,})" class="underline" target="_blank" onclick="return false;">([а-яА-Я0-9\D]{5,})</a>(<a class="ico photo" title="">([0-9]{1,})</a>|)</p></td>
-<td>([0-9\-\s]{1,})</td>
-<td>([\d\s\-\/]{1,})</td>
-<td>([\d\s\-\/]{1,})</td>
-<td>([\<]{1})/td>	<td><p><span><b>([\d\s\-\/]{2,})</b></span><br>([\D]{2,}).</p></td>#Uis', trim($row), $res);
-            $res[self::DATA_CONSTRUCTION] = '';
-        }
-
-        return $res;
-    }
-
-
-    protected function getResultDIV(): string
-    {
-        $result = '';
-        preg_match("#<div class=\"result\">(.*)</div>#Uis", $this->baseHTML, $res);
-        if (isset($res[1])) {
-            if (preg_match("#<table>(.*)</table>#Uis", trim($res[1]), $div)) {
-                $result = $div[1];
-            }
-
-        }
-
-        if (is_null($result)) {
-            $result = '';
-        }
-
-        return $result;
-    }
-
-    protected function getHTML(string $type, string $sort, string $sortOrder = 'ASC', string $priceFrom, string $priceTo): string
-    {
-        $url = sprintf($this->searchURL, $type, $sort, $sortOrder, $priceFrom, $priceTo);
-
-        if ($this->photo) {
-            $url = $url . $this->defaultPhotoParam;
-        }
-
-        return $this->getURL($url);
-    }
-
 
     protected function getTypes()
     {
@@ -173,29 +36,23 @@ class BnParser
             }
         }
     }
-
-    private function getURL(string $url): string
-    {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; MSIE 7.0; Windows NT 6.0; en-US)');
-        curl_setopt($ch, CURLOPT_COOKIEJAR, "cookie.txt");
-        curl_setopt($ch, CURLOPT_COOKIEFILE, "cookie.txt");
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result;
-    }
 }
 
-$parser = new BnParser();
+$parser = new BnParser2();
 
 if ($_POST) {
-    $parser->run();
+    if (strpos($_POST['type'], 'city') !== false) {
+        $parser = new \parser\City();
+
+    } elseif (strpos($_POST['type'], 'country') !== false) {
+        $parser = new \parser\Country();
+
+    } elseif (strpos($_POST['type'], 'commerce') !== false) {
+        $parser = new \parser\Commerce();
+    }
+
+
+    $html = $parser->run();
 }
 
 ?>
@@ -218,12 +75,10 @@ if ($_POST) {
                     <option value=""></option>
 
                     <? foreach ($parser->types as $txt => $url): ?>
-                        <? if (strpos($url, 'city') !== false): ?>
-                            <? if (isset($_POST['type']) && $_POST['type'] == $url): ?>
-                                <option value="<?= $url ?>" selected><?= $txt ?></option>
-                            <? else: ?>
-                                <option value="<?= $url ?>"><?= $txt ?></option>
-                            <? endif; ?>
+                        <? if (isset($_POST['type']) && $_POST['type'] == $url): ?>
+                            <option value="<?= $url ?>" selected><?= $txt ?></option>
+                        <? else: ?>
+                            <option value="<?= $url ?>"><?= $txt ?></option>
                         <? endif; ?>
                     <? endforeach; ?>
                 </select>
@@ -258,37 +113,7 @@ if ($_POST) {
 <? if ($_POST && empty($parser->result)): ?>
     Ничего не надо
 <? else: ?>
-
-    <table>
-        <thead>
-        <tr>
-            <td>Адрес</td>
-            <td>Кол-во фото</td>
-            <td>Ком.</td>
-            <td>Общ. / Жил. / Кух.</td>
-            <td>Этаж</td>
-            <td>Дом</td>
-            <td>Цена</td>
-        </tr>
-        </thead>
-        <tbody>
-        <? foreach ($parser->result as $key => $val): ?>
-            <? if (!empty($parser->rooms) && in_array(trim($val[$parser::DATA_ROOMS]), $parser->rooms) || empty($parser->rooms)): ?>
-                <tr>
-                    <td><a href="<?= $parser->baseURL . $val[$parser::DATA_LINK] ?>"
-                           target="_blank"><?= $val[$parser::DATA_TITLE] ?></a></td>
-                    <td><?= $val[$parser::DATA_COUNT_PHOTO] ?></td>
-                    <td><?= $val[$parser::DATA_ROOMS] ?></td>
-                    <td><?= $val[$parser::DATA_DIMENSIONS] ?></td>
-                    <td><?= $val[$parser::DATA_FLOOR] ?></td>
-                    <td><?= $val[$parser::DATA_CONSTRUCTION] ?></td>
-                    <td><?= $val[$parser::DATA_PRICE] ?></td>
-                    <td><?= $val[$parser::DATA_CURRENCY] ?></td>
-                </tr>
-            <? endif; ?>
-        <? endforeach; ?>
-        </tbody>
-    </table>
+    <?= $html ?>
 <? endif; ?>
 </body>
 </html>
