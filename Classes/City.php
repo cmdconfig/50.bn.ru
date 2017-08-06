@@ -26,7 +26,7 @@ class City extends app
 
     }
 
-    public function run()
+    public function run() :string
     {
         $type = $this->defaultType;
         $sort = '';
@@ -74,6 +74,8 @@ class City extends app
                 $this->result[] = $this->getDataFromRow($row);
             }
         }
+
+        return $this->createHTML();
     }
 
     protected function getDataFromRow(string $row): array
@@ -97,15 +99,11 @@ class City extends app
     }
 
 
-    private function createHTML()
+    private function createHTML() :string
     {
+        $html = [];
 
-
-
-
-$html = [];
-
-$html[] = '
+        $html[] = '
     <table>
         <thead>
         <tr>
@@ -120,46 +118,31 @@ $html[] = '
         </thead>
         <tbody>';
 
-foreach ($this->result as $key => $val){
-if (!empty($this->rooms) && in_array(trim($val[$this::DATA_ROOMS]), $this->rooms)){
-$href = $this->baseURL . $val[$this::DATA_LINK];
-$html[] = "             
+        foreach ($this->result as $key => $val) {
+            $href = $this->baseURL . $val[$this::DATA_LINK];
+
+            if ((!empty($this->rooms) && in_array(trim($val[self::DATA_ROOMS]), $this->rooms)) || empty($this->rooms)) {
+
+                $html[] = "             
                 <tr>
-                    <td><a href='{$href}
-
-'
-                           target='_blank'>{
-    $val[self::DATA_TITLE]}</a></td>
-                    <td>{
-$val[DATA_COUNT_PHOTO] }</td>
-                    <td><?= $val[DATA_ROOMS] ?></td>
-                    <td><?= $val[DATA_DIMENSIONS] ?></td>
-                    <td><?= $val[DATA_FLOOR] ?></td>
-                    <td><?= $val[DATA_CONSTRUCTION] ?></td>
-                    <td><?= $val[DATA_PRICE] ?></td>
-                    <td><?= $val[DATA_CURRENCY] ?></td>
-                </tr>
-            <? elseif (empty($this->rooms)): ?>
-                <tr>
-                    <td><a href=" <?= $this->baseURL . $val[$this::DATA_LINK] ?>"
-target="_blank"><?= $val[$this::DATA_TITLE] ?></a></td>
-<td><?= $val[$this::DATA_COUNT_PHOTO] ?></td>
-<td><?= $val[$this::DATA_ROOMS] ?></td>
-<td><?= $val[$this::DATA_DIMENSIONS] ?></td>
-<td><?= $val[$this::DATA_FLOOR] ?></td>
-<td><?= $val[$this::DATA_CONSTRUCTION] ?></td>
-<td><?= $val[$this::DATA_PRICE] ?></td>
-<td><?= $val[$this::DATA_CURRENCY] ?></td>
-</tr>
-";
-
-</tbody>
-</table>
-</body>
-</html>';
+                    <td><a href='{$href}' target='_blank'>{$val[self::DATA_TITLE]}</a></td>
+                    <td>{$val[self::DATA_COUNT_PHOTO]}</td>
+                    <td>{$val[self::DATA_ROOMS]}</td>
+                    <td>{$val[self::DATA_DIMENSIONS]}</td>
+                    <td>{$val[self::DATA_FLOOR]}</td>
+                    <td>{$val[self::DATA_CONSTRUCTION]}</td>
+                    <td>{$val[self::DATA_PRICE]}</td>
+                    <td>{$val[self::DATA_CURRENCY]}</td>
+                </tr>";
+            }
 
 
+            $html[] = '
+                </tbody>
+                </table>
+                ';
+        }
+
+        return join('', $html);
     }
-
-
 }

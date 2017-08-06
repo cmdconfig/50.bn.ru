@@ -20,7 +20,7 @@ abstract class app
     public $baseURL = 'http://www.50.bn.ru';
     protected $searchURL = 'http://www.50.bn.ru/sale/%s/?sort=%s&sortorder=%s&price[from]=%s&price[to]=%s';
 
-    private $baseHTML = '';
+    protected $baseHTML = '';
 
     public $types = [];
 

@@ -273,19 +273,7 @@ if ($_POST) {
         </thead>
         <tbody>
         <? foreach ($parser->result as $key => $val): ?>
-            <? if (!empty($parser->rooms) && in_array(trim($val[$parser::DATA_ROOMS]), $parser->rooms)): ?>
-                <tr>
-                    <td><a href="<?= $parser->baseURL . $val[$parser::DATA_LINK] ?>"
-                           target="_blank"><?= $val[$parser::DATA_TITLE] ?></a></td>
-                    <td><?= $val[$parser::DATA_COUNT_PHOTO] ?></td>
-                    <td><?= $val[$parser::DATA_ROOMS] ?></td>
-                    <td><?= $val[$parser::DATA_DIMENSIONS] ?></td>
-                    <td><?= $val[$parser::DATA_FLOOR] ?></td>
-                    <td><?= $val[$parser::DATA_CONSTRUCTION] ?></td>
-                    <td><?= $val[$parser::DATA_PRICE] ?></td>
-                    <td><?= $val[$parser::DATA_CURRENCY] ?></td>
-                </tr>
-            <? elseif (empty($parser->rooms)): ?>
+            <? if (!empty($parser->rooms) && in_array(trim($val[$parser::DATA_ROOMS]), $parser->rooms) || empty($parser->rooms)): ?>
                 <tr>
                     <td><a href="<?= $parser->baseURL . $val[$parser::DATA_LINK] ?>"
                            target="_blank"><?= $val[$parser::DATA_TITLE] ?></a></td>
